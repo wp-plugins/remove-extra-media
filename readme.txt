@@ -4,8 +4,8 @@ Contributors: comprock
 Donate link: http://aihr.us/about-aihrus/donate/
 Tags: remove, media, posts
 Requires at least: 3.5
-Tested up to: 3.6.1
-Stable tag: 1.0.0
+Tested up to: 3.8.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,12 +17,16 @@ Use this tool to remove extra media attachments from your selected post types.
 
 In my use case, my testimonials widgets post types in some cases, for whatever reason, had up to 7 extra media attachments related to them. I wanted a quick way to clear those excess out. Considering that the only image or media attachment a testimonial should have was the featured, I simply removed all the others.
 
+This tool works by removing the attachment relationship as this saves the media file in case it's used by other attachments. Using `wp_delete_attachment` would delete the media file, which is something to avoid.
+
 = Primary Features =
 
-* Ajax based processing screen
 * API
+* Ajax based processing screen
+* Media isn't deleted, only unattached from post type entry
 * Settings export/import
 * Settings screen
+* Variable allowed media count
 
 = Settings Options =
 
