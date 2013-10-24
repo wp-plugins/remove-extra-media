@@ -22,7 +22,10 @@
 		<exclude name="Generic.WhiteSpace.ScopeIndent.Incorrect" />
 	</rule>
 
-	<rule ref="Squiz.PHP.CommentedOutCode"/>
+	<rule ref="Squiz.PHP.CommentedOutCode">
+		<exclude name="Squiz.PHP.CommentedOutCode.Found" />
+	</rule>
+
 	<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace">
 		<exclude name="Squiz.WhiteSpace.SuperfluousWhitespace.EndLine" />
 	</rule>
@@ -31,5 +34,6 @@
 		<exclude name="WordPress.XSS.EscapeOutput" />
 		<!-- travis-ci.org is puking on switch/case indentation -->
 		<exclude name="WordPress.WhiteSpace.ScopeIndent.Incorrect" />
+		<exclude name="WordPress.WhiteSpace.ControlStructureSpacing" />
 	</rule>
 </ruleset>

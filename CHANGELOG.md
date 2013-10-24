@@ -2,6 +2,14 @@
 
 ## master
 
+## 1.0.1
+* Change $2 donation request to $5
+* Move screenshots to SVN assets
+* Revise features
+* Simplify `wp_enqueue_style` handling
+* Travis ignore WordPress.WhiteSpace.ControlStructureSpacing - false positives
+* https jQuery transport
+
 ## 1.0.0
 * Add No text flag
 * Add in remove extra media processor
