@@ -1,6 +1,6 @@
 === Remove Extra Media by Aihrus ===
 
-Contributors: comprock
+Contributors: comprock, saurabhd
 Donate link: http://aihr.us/about-aihrus/donate/
 Tags: remove, media, posts
 Requires at least: 3.5
