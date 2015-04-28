@@ -1,6 +1,18 @@
-# CHANGELOG Remove Extra Media plugin for WordPress
+# CHANGELOG - Remove Extra Media
+
+## 1.1.0
+* Change branding from Aihrus to Axelerant
+* Update about tab
+* Update copyright text
+* Update file headers
+* Update PHPCS to WordPress-Core
 
 ## master
+* Convert TODO to https://github.com/michael-cannon/remove-extra-media/issues
+* Convert to static class coding
+* Revise readme structure
+* Specify a “Text Domain” and “Domain Path”
+* transformmed > transformed
 
 ## 1.0.1
 * Change $2 donation request to $5

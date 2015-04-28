@@ -2,16 +2,18 @@
 /**
  * Plugin Name: Remove Extra Media
  * Plugin URI: http://wordpress.org/extend/plugins/remove-extra-media/
- * Description: Use this tool to remove extra media attachments from your selected post types.
- * Version: 1.0.1
- * Author: Michael Cannon
- * Author URI: http://aihr.us/about-aihrus/michael-cannon-resume/
+ * Description: Use Remove Extra Media to remove extra media attachments from your selected post types.
+ * Version: 1.1.0
+ * Author: Axelerant
+ * Author URI: http://axelerant.com/
  * License: GPLv2 or later
+ * Text Domain: remove-extra-media
+ * Domain Path: /languages
  */
 
 
 /**
- * Copyright 2013 Michael Cannon (email: mc@aihr.us)
+ * Copyright 2015 Axelerant (email: info@axelerant.com)
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
  * published by the Free Software Foundation.
@@ -26,28 +28,29 @@
 class Remove_Extra_Media {
 	const ID          = 'remove-extra-media';
 	const PLUGIN_FILE = 'remove-extra-media/remove-extra-media.php';
-	const VERSION     = '1.0.1';
+	const VERSION     = '1.1.0';
 
 	private static $base;
 	private static $post_types;
 
 	public static $donate_button;
 	public static $menu_id;
+	public static $post_id;
 	public static $settings_link;
 
 
 	public function __construct() {
-		add_action( 'admin_init', array( $this, 'admin_init' ) );
-		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-		add_action( 'init', array( $this, 'init' ) );
+		add_action( 'admin_init', array( __CLASS__, 'admin_init' ) );
+		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
+		add_action( 'init', array( __CLASS__, 'init' ) );
 		self::$base = plugin_basename( __FILE__ );
 	}
 
 
-	public function admin_init() {
-		$this->update();
-		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
-		add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
+	public static function admin_init() {
+		self::update();
+		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
+		add_filter( 'plugin_row_meta', array( __CLASS__, 'plugin_row_meta' ), 10, 2 );
 
 		self::$donate_button = <<<EOD
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
@@ -62,11 +65,11 @@ EOD;
 	}
 
 
-	public function admin_menu() {
-		self::$menu_id = add_management_page( esc_html__( 'Remove Extra Media Processer', 'remove-extra-media' ), esc_html__( 'Remove Extra Media Processer', 'remove-extra-media' ), 'manage_options', self::ID, array( $this, 'user_interface' ) );
+	public static function admin_menu() {
+		self::$menu_id = add_management_page( esc_html__( 'Remove Extra Media Processer', 'remove-extra-media' ), esc_html__( 'Remove Extra Media Processer', 'remove-extra-media' ), 'manage_options', self::ID, array( __CLASS__, 'user_interface' ) );
 
-		add_action( 'admin_print_scripts-' . self::$menu_id, array( $this, 'scripts' ) );
-		add_action( 'admin_print_styles-' . self::$menu_id, array( $this, 'styles' ) );
+		add_action( 'admin_print_scripts-' . self::$menu_id, array( __CLASS__, 'scripts' ) );
+		add_action( 'admin_print_styles-' . self::$menu_id, array( __CLASS__, 'styles' ) );
 
 		add_screen_meta_link(
 			'rmem_settings_link',
@@ -78,14 +81,14 @@ EOD;
 	}
 
 
-	public function init() {
-		add_action( 'wp_ajax_ajax_process_post', array( $this, 'ajax_process_post' ) );
+	public static function init() {
+		add_action( 'wp_ajax_ajax_process_post', array( __CLASS__, 'ajax_process_post' ) );
 		load_plugin_textdomain( self::ID, false, 'remove-extra-media/languages' );
 		self::set_post_types();
 	}
 
 
-	public function plugin_action_links( $links, $file ) {
+	public static function plugin_action_links( $links, $file ) {
 		if ( $file == self::$base ) {
 			array_unshift( $links, self::$settings_link );
 
@@ -97,25 +100,26 @@ EOD;
 	}
 
 
-	public function activation() {
+	public static function activation() {
 		if ( ! current_user_can( 'activate_plugins' ) )
 			return;
 	}
 
 
-	public function deactivation() {
+	public static function deactivation() {
 		if ( ! current_user_can( 'activate_plugins' ) )
 			return;
 	}
 
 
-	public function uninstall() {
+	public static function uninstall() {
 		if ( ! current_user_can( 'activate_plugins' ) )
 			return;
 
 		global $wpdb;
 
 		require_once 'lib/class-remove-extra-media-settings.php';
+
 		$delete_data = rmem_get_option( 'delete_data', false );
 		if ( $delete_data ) {
 			delete_option( Remove_Extra_Media_Settings::ID );
@@ -133,8 +137,8 @@ EOD;
 			return $input;
 
 		$links = array(
-			'<a href="http://aihr.us/about-aihrus/donate/"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" alt="PayPal - The safer, easier way to pay online!" /></a>',
-			'<a href="http://aihr.us/downloads/remove-extra-media-premium-wordpress-plugin/">Purchase Remove Extra Media Premium</a>',
+			'<a href="http://axelerant.com/about-axelerant/donate/"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" alt="PayPal - The safer, easier way to pay online!" /></a>',
+			'<a href="http://axelerant.com/downloads/remove-extra-media-premium-wordpress-plugin/">Purchase Remove Extra Media Premium</a>',
 		);
 
 		$input = array_merge( $input, $links );
@@ -155,10 +159,10 @@ EOD;
 	 * @SuppressWarnings(PHPMD.ExitExpression)
 	 * @SuppressWarnings(PHPMD.Superglobals)
 	 */
-	public function user_interface() {
+	public static function user_interface() {
 		// Capability check
 		if ( ! current_user_can( 'manage_options' ) )
-			wp_die( $this->post_id, esc_html__( "Your user account doesn't have permission to access this.", 'remove-extra-media' ) );
+			wp_die( self::$post_id, esc_html__( "Your user account doesn't have permission to access this.", 'remove-extra-media' ) );
 
 ?>
 
@@ -173,8 +177,8 @@ EOD;
 			$posts_to_import = rmem_get_option( 'posts_to_import' );
 			$posts_to_import = explode( ',', $posts_to_import );
 			foreach ( $posts_to_import as $post_id ) {
-				$this->post_id = $post_id;
-				$this->ajax_process_post();
+				self::$post_id = $post_id;
+				self::ajax_process_post();
 			}
 
 			exit( __LINE__ . ':' . basename( __FILE__ ) . " DONE<br />\n" );
@@ -200,10 +204,10 @@ EOD;
 			}
 
 			$posts = implode( ',', $posts );
-			$this->show_status( $count, $posts );
+			self::show_status( $count, $posts );
 		} else {
 			// No button click? Display the form.
-			$this->show_greeting();
+			self::show_greeting();
 		}
 ?>
 	</div>
@@ -244,14 +248,14 @@ EOD;
 	}
 
 
-	public function show_greeting() {
+	public static function show_greeting() {
 ?>
 	<form method="post" action="">
 <?php wp_nonce_field( self::ID ); ?>
 
 	<p><?php _e( 'Use this tool to remove extra media attachments from your selected post types.', 'remove-extra-media' ); ?></p>
 
-	<p><?php _e( 'This processing is not reversible. Backup your database and files beforehand or be prepared to revert each transformmed post manually.', 'remove-extra-media' ); ?></p>
+	<p><?php _e( 'This processing is not reversible. Backup your database and files beforehand or be prepared to revert each transformed post manually.', 'remove-extra-media' ); ?></p>
 
 	<p><?php printf( esc_html__( 'Please review your %s before proceeding.', 'remove-extra-media' ), self::$settings_link ); ?></p>
 
@@ -271,7 +275,7 @@ EOD;
 	 *
 	 * @SuppressWarnings(PHPMD.Superglobals)
 	 */
-	public function show_status( $count, $posts ) {
+	public static function show_status( $count, $posts ) {
 		echo '<p>' . esc_html__( 'Please be patient while this script run. This can take a while, up to a minute per post. Do not navigate away from this page until this script is done or the import will not be completed. You will be notified via this page when the import is completed.', 'remove-extra-media' ) . '</p>';
 
 		echo '<p>' . sprintf( esc_html__( 'Estimated time required to import is %1$s minutes.', 'remove-extra-media' ), ( $count / 12 ) ) . '</p>';
@@ -420,22 +424,22 @@ EOD;
 	 * @SuppressWarnings(PHPMD.ExitExpression)
 	 * @SuppressWarnings(PHPMD.Superglobals)
 	 */
-	public function ajax_process_post() {
+	public static function ajax_process_post() {
 		if ( ! rmem_get_option( 'debug_mode' ) ) {
 			error_reporting( 0 ); // Don't break the JSON result
 			header( 'Content-type: application/json' );
-			$this->post_id = intval( $_REQUEST['id'] );
+			self::$post_id = intval( $_REQUEST['id'] );
 		}
 
-		$post = get_post( $this->post_id );
+		$post = get_post( self::$post_id );
 		if ( ! $post || ! in_array( $post->post_type, self::$post_types )  )
-			die( json_encode( array( 'error' => sprintf( esc_html__( 'Failed Processing: %s is incorrect post type.', 'remove-extra-media' ), esc_html( $this->post_id ) ) ) ) );
+			die( json_encode( array( 'error' => sprintf( esc_html__( 'Failed Processing: %s is incorrect post type.', 'remove-extra-media' ), esc_html( self::$post_id ) ) ) ) );
 
-		$count_removed = $this->do_remove_extra_media( $this->post_id, $post );
+		$count_removed = self::do_remove_extra_media( self::$post_id, $post );
 		if ( empty( $count_removed ) )
 			$count_removed = __( 'No', 'remove-extra-media' );
 
-		die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Post ID %3$s was successfully processed in %4$s seconds. <strong>%5$s</strong> extra media removed.', 'remove-extra-media' ), get_permalink( $this->post_id ), esc_html( get_the_title( $this->post_id ) ), $this->post_id, timer_stop(), $count_removed ) ) ) );
+		die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Post ID %3$s was successfully processed in %4$s seconds. <strong>%5$s</strong> extra media removed.', 'remove-extra-media' ), get_permalink( self::$post_id ), esc_html( get_the_title( self::$post_id ) ), self::$post_id, timer_stop(), $count_removed ) ) ) );
 	}
 
 
@@ -444,7 +448,7 @@ EOD;
 	 *
 	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
 	 */
-	public function do_remove_extra_media( $post_id, $post ) {
+	public static function do_remove_extra_media( $post_id, $post ) {
 		global $wpdb;
 
 		$featured_id = get_post_thumbnail_id( $post_id );
@@ -484,16 +488,16 @@ EOD;
 	}
 
 
-	public function admin_notices_0_0_1() {
+	public static function admin_notices_0_0_1() {
 		$content  = '<div class="updated fade"><p>';
-		$content .= sprintf( __( 'If your Remove Extra Media display has gone to funky town, please <a href="%s">read the FAQ</a> about possible CSS fixes.', 'remove-extra-media' ), 'https://aihrus.zendesk.com/entries/23722573-Major-Changes-Since-2-10-0' );
+		$content .= sprintf( __( 'If your Remove Extra Media display has gone to funky town, please <a href="%s">read the FAQ</a> about possible CSS fixes.', 'remove-extra-media' ), 'https://nodedesk.zendesk.com/hc/en-us/articles/202244392-Major-Changes-Since-2-10-0' );
 		$content .= '</p></div>';
 
 		echo $content;
 	}
 
 
-	public function admin_notices_donate() {
+	public static function admin_notices_donate() {
 		$content  = '<div class="updated fade"><p>';
 		$content .= sprintf( __( 'Please donate $5 towards development and support of this Remove Extra Media plugin. %s', 'remove-extra-media' ), self::$donate_button );
 		$content .= '</p></div>';
@@ -502,11 +506,11 @@ EOD;
 	}
 
 
-	public function update() {
+	public static function update() {
 		$prior_version = rmem_get_option( 'admin_notices' );
 		if ( $prior_version ) {
 			if ( $prior_version < '0.0.1' )
-				add_action( 'admin_notices', array( $this, 'admin_notices_0_0_1' ) );
+				add_action( 'admin_notices', array( __CLASS__, 'admin_notices_0_0_1' ) );
 
 			rmem_set_option( 'admin_notices' );
 		}
@@ -514,7 +518,7 @@ EOD;
 		// display donate on major/minor version release
 		$donate_version = rmem_get_option( 'donate_version', false );
 		if ( ! $donate_version || ( $donate_version != self::VERSION && preg_match( '#\.0$#', self::VERSION ) ) ) {
-			add_action( 'admin_notices', array( $this, 'admin_notices_donate' ) );
+			add_action( 'admin_notices', array( __CLASS__, 'admin_notices_donate' ) );
 			rmem_set_option( 'donate_version', self::VERSION );
 		}
 	}
